@@ -1,3 +1,4 @@
+import { Auth } from 'aws-amplify';
 import React, { Component } from 'react';
 import FormErrors from "../FormErrors";
 import Validate from "../utility/FormValidation";
@@ -38,6 +39,29 @@ class Register extends Component {
     }
 
     // AWS Cognito integration here
+    const{username,email,password} = this.state;
+    try{
+     const signUpResponse = await Auth.signUp({
+        username,
+        password,
+        attributes :{
+          email : email
+        }
+     })
+     console.log(signUpResponse);
+     this.props.history.push("/welcome");
+    }
+    catch(error){
+      let err = null;
+      !error.message ? err = {"message":error} : err = error;
+      this.setState({
+      errors:  {
+        ...this.state.errors,
+        cognito : err
+        }
+      })
+      console.log(this.state);
+    }
   };
 
   onInputChange = event => {
